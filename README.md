@@ -4,10 +4,7 @@ Shared Memory FIFO Library
 This library provides a shared memory implementation of a FIFO.
 Its operation is similar to that of POSIX pipes.
 
-## License
-This code is currently availible under 3 different licencing terms:
- - BSD 3 Clause
- - GPL
- - LGPL
+This code requires linking with `-pthreads -lrt` and compiling/linking with `--std=C11` or higher.
 
-The user is free to select the licence which best suits their use case.
+## License
+This code is availible under the BSD License.
