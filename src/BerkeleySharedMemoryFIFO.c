@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/types.h>
 
 void initSharedMemoryFIFO(sharedMemoryFIFO_t *fifo){
     fifo->sharedName = NULL;
