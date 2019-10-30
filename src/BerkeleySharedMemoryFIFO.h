@@ -36,6 +36,7 @@
 
 #ifndef BERKELEYSHAREDMEMORYFIFO_H
 #define BERKELEYSHAREDMEMORYFIFO_H
+#define _DEFAULT_SOURCE
 
 #include <stdatomic.h>
 #include <semaphore.h>
