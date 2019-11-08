@@ -396,10 +396,6 @@ bool isReadyForReading(sharedMemoryFIFO_t *fifo){
 }
 
 bool isReadyForWriting(sharedMemoryFIFO_t *fifo){
-    if(!fifo->rxReady){
-        return false;
-    }
-
     if(!fifo->rxReady) {
         //---- Check if consumer joined ----
         int status = sem_trywait(fifo->rxSem);
