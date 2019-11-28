@@ -121,6 +121,8 @@ int producerOpenInitFIFO(char *sharedName, size_t fifoSizeBytes, sharedMemoryFIF
     char* fifoBlockBytes = (char*) fifo->fifoBlock;
     fifo->fifoBuffer = (void*) (fifoBlockBytes + sizeof(atomic_int_fast32_t));
 
+    //The semaphore is an implicit fence
+
     //FIFO init done
     //---- Release the semaphore ----
     sem_post(fifo->txSem);
@@ -165,6 +167,8 @@ int consumerOpenFIFOBlock(char *sharedName, size_t fifoSizeBytes, sharedMemoryFI
         perror(NULL);
         exit(1);
     }
+
+    //The semaphore is an implicit fence
 
     //---- Open shared mem ----
     fifo->sharedFD = shm_open(sharedName, O_RDWR, S_IRWXU);
@@ -216,7 +220,7 @@ int writeFifo(void* src_uncast, size_t elementSize, int numElements, sharedMemor
     size_t bytesToWrite = elementSize*numElements;
 
     while(!hasRoom){
-        int currentCount = atomic_load(fifo->fifoCount);
+        int currentCount = atomic_load_explicit(fifo->fifoCount, memory_order_acquire);
         int spaceInFIFO = fifo->fifoSizeBytes - currentCount;
         //TODO: REMOVE
         if(spaceInFIFO<0){
@@ -254,7 +258,7 @@ int writeFifo(void* src_uncast, size_t elementSize, int numElements, sharedMemor
     fifo->currentOffset = currentOffsetLocal;
 
     //Update the fifoCount, do not need the new value
-    atomic_fetch_add(fifo->fifoCount, bytesToWrite);
+    atomic_fetch_add_explicit(fifo->fifoCount, bytesToWrite, memory_order_acq_rel);
 
     return numElements;
 }
@@ -268,7 +272,7 @@ int readFifo(void* dst_uncast, size_t elementSize, int numElements, sharedMemory
     size_t bytesToRead = elementSize*numElements;
 
     while(!hasData){
-        int currentCount = atomic_load(fifo->fifoCount);
+        int currentCount = atomic_load_explicit(fifo->fifoCount, memory_order_acquire);
         //TODO: REMOVE
         if(currentCount<0){
             printf("FIFO had a negative count");
@@ -306,7 +310,7 @@ int readFifo(void* dst_uncast, size_t elementSize, int numElements, sharedMemory
     fifo->currentOffset = currentOffsetLocal;
 
     //Update the fifoCount, do not need the new value
-    atomic_fetch_sub(fifo->fifoCount, bytesToRead);
+    atomic_fetch_sub_explicit(fifo->fifoCount, bytesToRead, memory_order_acq_rel);
 
     return numElements;
 }
@@ -391,7 +395,7 @@ void cleanupConsumer(sharedMemoryFIFO_t *fifo) {
 }
 
 bool isReadyForReading(sharedMemoryFIFO_t *fifo){
-    int32_t currentCount = atomic_load(fifo->fifoCount);
+    int32_t currentCount = atomic_load_explicit(fifo->fifoCount, memory_order_acquire);
     return currentCount != 0;
 }
 
@@ -407,6 +411,6 @@ bool isReadyForWriting(sharedMemoryFIFO_t *fifo){
         }
     }
 
-    int32_t currentCount = atomic_load(fifo->fifoCount);
+    int32_t currentCount = atomic_load_explicit(fifo->fifoCount, memory_order_acquire);
     return currentCount < fifo->fifoSizeBytes;
 }

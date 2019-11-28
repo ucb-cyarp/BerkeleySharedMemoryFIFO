@@ -52,8 +52,8 @@ typedef struct{
     sem_t *txSem;
     sem_t *rxSem;
     atomic_int_fast32_t* fifoCount;
-    volatile void* fifoBlock;
-    volatile void* fifoBuffer;
+    void* fifoBlock;
+    void* fifoBuffer;
     size_t fifoSizeBytes;
     size_t fifoSharedBlockSizeBytes;
     size_t currentOffset;
