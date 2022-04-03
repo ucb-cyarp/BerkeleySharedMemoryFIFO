@@ -24,4 +24,5 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.6409002
     description: Zenodo DOI for v1.0.0 of this software
+doi: 10.5281/zenodo.6409002
 license: BSD-3-Clause
