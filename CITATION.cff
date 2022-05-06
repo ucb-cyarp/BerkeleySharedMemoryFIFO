@@ -6,7 +6,10 @@ title: >-
   BerkeleySharedMemoryFIFO
 message: >-
   Please use the following metadata when citing this
-  software.
+  software. Generated Bibtex should be a @phdthesis entry. 
+  If the automatic generator does not produce an
+  entry of this type, please see the "Citing This 
+  Software" section of the Readme.md file.
 type: software
 authors:
   - given-names: Christopher
